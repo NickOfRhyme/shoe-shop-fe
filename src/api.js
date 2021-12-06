@@ -13,3 +13,9 @@ export const getProduct = (productId) => {
     .get(`${BASE_URL}products/${productId}`)
     .then((response) => response.data);
 };
+
+export const putProductInCart = (productId) => {
+  return axios
+    .put(`${BASE_URL}products/${productId}/placeincart`)
+    .then((response) => response.data);
+};

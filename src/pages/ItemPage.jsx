@@ -9,15 +9,25 @@ export default function ItemPage({ item }) {
   const { user } = useContext(UserContext);
   const { cart, changeCart } = useContext(CartContext);
 
+  const inCart =
+    cart?.filter((cartProduct) => cartProduct.id === product.id).length > 0;
+
   useEffect(() => {
     api.getProduct(item).then(({ products }) => {
       setProduct(products[0]);
     });
-  }, []);
+  }, [cart]);
 
-  const handleOrder = (e) => {
+  const handleCartPlacement = (e) => {
     e.preventDefault();
-    cart ? changeCart([...cart, product]) : changeCart([product]);
+    api.putProductInCart(product.id).then((data) => {
+      console.log(data);
+      const timedProduct = {
+        ...product,
+        cartRemovalTime: data?.cartRemovalTime,
+      };
+      cart ? changeCart([...cart, timedProduct]) : changeCart([timedProduct]);
+    });
   };
 
   return (
@@ -44,13 +54,21 @@ export default function ItemPage({ item }) {
           <Typography variant='h4'>Out of stock</Typography>
         )}
       </Stack>
-
-      <Stack sx={{ pt: 4 }} direction='row' spacing={2} justifyContent='center'>
-        <Button onClick={handleOrder} variant='contained'>
-          Add to cart
-        </Button>
-        {user?.role === "admin" && <Button variant='outlined'>Edit</Button>}
-      </Stack>
+      {user && (
+        <Stack
+          sx={{ pt: 4 }}
+          direction='row'
+          spacing={2}
+          justifyContent='center'>
+          <Button
+            onClick={handleCartPlacement}
+            disabled={inCart || product.stock - product.in_carts === 0}
+            variant='contained'>
+            {inCart ? "Added to cart" : "Add to cart"}
+          </Button>
+          {user?.role === "admin" && <Button variant='outlined'>Edit</Button>}
+        </Stack>
+      )}
     </Container>
   );
 }

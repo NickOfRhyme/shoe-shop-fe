@@ -7,10 +7,25 @@ import {
   Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material/";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { UserContext } from "../contexts/UserContext";
 import { Box } from "@mui/system";
+
+const calculateTimeLeft = (date) => {
+  const now = +new Date();
+  let difference = date - now;
+  let timeLeft = {};
+
+  if (difference > 0) {
+    timeLeft = {
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    };
+  }
+
+  return timeLeft;
+};
 
 export default function ShoppingCart() {
   const style = {
@@ -25,7 +40,6 @@ export default function ShoppingCart() {
     p: 4,
   };
 
-  const { user } = useContext(UserContext);
   const { cart, changeCart, cartOpen, changeCartOpen } =
     useContext(CartContext);
 
@@ -40,9 +54,15 @@ export default function ShoppingCart() {
       <Box sx={style}>
         {cart ? (
           <List>
-            {cart.map((product) => {
+            {cart.map((product, index) => {
+              const now = +new Date();
+              const timeLeft = +new Date(product.cartRemovalTime);
+              const difference = timeLeft - now;
+              const minutesLeft = Math.round((difference / 1000 / 60) % 60);
+
               return (
                 <ListItem
+                  key={product}
                   secondaryAction={
                     <IconButton onClick={() => handleDelete(product.id)}>
                       <Delete />
@@ -52,9 +72,7 @@ export default function ShoppingCart() {
                     primary={`${product.product_name} £${
                       product.price_pence / 100
                     }`}
-                    secondary={`${
-                      product.stock
-                    } left in stock.  Order in the next ${5} minutes to guarantee yours.`}
+                    secondary={`${product.stock} left in stock.  Order in the next ${minutesLeft} minutes to guarantee yours.`}
                   />
                 </ListItem>
               );
