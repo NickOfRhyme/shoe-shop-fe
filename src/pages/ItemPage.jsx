@@ -2,16 +2,23 @@ import * as api from "../api";
 import { useEffect, useState, useContext } from "react";
 import { Container, Typography, Stack, Button } from "@mui/material";
 import { UserContext } from "../contexts/UserContext";
+import { CartContext } from "../contexts/CartContext";
 
 export default function ItemPage({ item }) {
   const [product, setProduct] = useState({});
   const { user } = useContext(UserContext);
+  const { cart, changeCart } = useContext(CartContext);
 
   useEffect(() => {
     api.getProduct(item).then(({ products }) => {
       setProduct(products[0]);
     });
   }, []);
+
+  const handleOrder = (e) => {
+    e.preventDefault();
+    cart ? changeCart([...cart, product]) : changeCart([product]);
+  };
 
   return (
     <Container maxWidth='sm'>
@@ -39,7 +46,9 @@ export default function ItemPage({ item }) {
       </Stack>
 
       <Stack sx={{ pt: 4 }} direction='row' spacing={2} justifyContent='center'>
-        <Button variant='contained'>Add to cart</Button>
+        <Button onClick={handleOrder} variant='contained'>
+          Add to cart
+        </Button>
         {user?.role === "admin" && <Button variant='outlined'>Edit</Button>}
       </Stack>
     </Container>

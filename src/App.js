@@ -9,6 +9,7 @@ import { UserProvider } from "./contexts/UserContext";
 import LoginPage from "./pages/LoginPage";
 import TitleBar from "./components/TitleBar";
 import { CartProvider } from "./contexts/CartContext";
+import ShoppingCart from "./components/ShoppingCart";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <UserPage path='/users/:user' />
           <LoginPage path='/login' />
         </Router>
+        <ShoppingCart />
       </CartProvider>
     </UserProvider>
   );
