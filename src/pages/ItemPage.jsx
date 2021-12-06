@@ -1,21 +1,11 @@
 import * as api from "../api";
-import { useEffect, useState } from "react";
-import {
-  Container,
-  Typography,
-  Card,
-  Grid,
-  ToggleButtonGroup,
-  ToggleButton,
-  Stack,
-  Button,
-  CardContent,
-  CardMedia,
-  CardActionArea,
-} from "@mui/material";
+import { useEffect, useState, useContext } from "react";
+import { Container, Typography, Stack, Button } from "@mui/material";
+import { UserContext } from "../contexts/UserContext";
 
 export default function ItemPage({ item }) {
   const [product, setProduct] = useState({});
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     api.getProduct(item).then(({ products }) => {
@@ -39,14 +29,18 @@ export default function ItemPage({ item }) {
 
       <Stack sx={{ pt: 4 }} direction='row' justifyContent='space-between'>
         <Typography variant='h4'>£{product.price_pence / 100}</Typography>
-        <Typography variant='h4'>
-          {product.stock - product.in_carts} available
-        </Typography>
+        {product.stock - product.in_carts > 0 ? (
+          <Typography variant='h4'>
+            {product.stock - product.in_carts} available
+          </Typography>
+        ) : (
+          <Typography variant='h4'>Out of stock</Typography>
+        )}
       </Stack>
 
       <Stack sx={{ pt: 4 }} direction='row' spacing={2} justifyContent='center'>
         <Button variant='contained'>Add to cart</Button>
-        <Button variant='outlined'>Edit</Button>
+        {user?.role === "admin" && <Button variant='outlined'>Edit</Button>}
       </Stack>
     </Container>
   );
