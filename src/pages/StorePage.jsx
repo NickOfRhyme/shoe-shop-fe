@@ -1,12 +1,19 @@
 import * as api from "../api";
-import { Link } from "@reach/router";
+import { navigate } from "@reach/router";
 import { useEffect, useState } from "react";
 import {
   Container,
   Typography,
+  Card,
+  Grid,
   ToggleButtonGroup,
   ToggleButton,
+  Stack,
+  CardContent,
+  CardMedia,
+  CardActionArea,
 } from "@mui/material";
+import { Box } from "@mui/system";
 
 export default function StorePage() {
   const [productList, setProductList] = useState([]);
@@ -31,52 +38,56 @@ export default function StorePage() {
   };
 
   return (
-    <Container maxWidth='sm'>
-      <Typography>Products Available Today</Typography>
+    <Container maxWidth='md'>
+      <Stack
+        spacing={2}
+        alignItems='center'
+        justifyItems='center'
+        direction={{ xs: "column", md: "row" }}>
+        <ToggleButtonGroup
+          value={productCategory}
+          exclusive
+          onChange={handleCategory}>
+          <ToggleButton value={1}>Men</ToggleButton>
+          <ToggleButton value={2}>Women</ToggleButton>
+          <ToggleButton value={3}>Kids</ToggleButton>
+          <ToggleButton value={null}>All</ToggleButton>
+        </ToggleButtonGroup>
 
-      <ToggleButtonGroup
-        value={productCategory}
-        exclusive
-        onChange={handleCategory}>
-        <ToggleButton value={1}>Men</ToggleButton>
-        <ToggleButton value={2}>Women</ToggleButton>
-        <ToggleButton value={3}>Kids</ToggleButton>
-        <ToggleButton value={null}>All</ToggleButton>
-      </ToggleButtonGroup>
-
-      <ToggleButtonGroup value={shoeType} exclusive onChange={handleShoeType}>
-        <ToggleButton value={1}>Trainers</ToggleButton>
-        <ToggleButton value={2}>Boots</ToggleButton>
-        <ToggleButton value={3}>Formal</ToggleButton>
-        <ToggleButton value={null}>All</ToggleButton>
-      </ToggleButtonGroup>
-
-      <ul>
-        {productList.map(
-          (product) => (
-            <p>{product.product_name}</p>
-          )
-          // <Link to={`/items/${product.id}`}>Let's take a look at item {product}</Link>
-        )}
-      </ul>
+        <ToggleButtonGroup value={shoeType} exclusive onChange={handleShoeType}>
+          <ToggleButton value={1}>Trainers</ToggleButton>
+          <ToggleButton value={2}>Boots</ToggleButton>
+          <ToggleButton value={3}>Formal</ToggleButton>
+          <ToggleButton value={null}>All</ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
+      <Box sx={{ height: 20 }} />
+      <Grid container spacing={4}>
+        {productList.map((product) => (
+          <Grid item key={product} xs={12} sm={6} md={4}>
+            <Card>
+              <CardActionArea
+                onClick={() => {
+                  navigate(`/items/${product.id}`);
+                }}>
+                <CardMedia
+                  component='img'
+                  image='https://burst.shopifycdn.com/photos/black-hightop-LED-shoes.jpg'
+                />
+                <CardContent>
+                  <Typography gutterBottom variant='h4'>
+                    {product.product_name}
+                  </Typography>
+                  <Typography>{product.short_desc}</Typography>
+                  <Typography variant='subtitle1'>
+                    £{product.price_pence / 100}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     </Container>
   );
 }
-
-/*
-queries:
-category_id: men: 1, women: 2, kids: 3
-shoetype_id: trainers: 1, boots: 2, kids: 3
-size:
-
-product:
-category_id INT REFERENCES productcategories(id) NOT NULL,
-    shoetype_id INT REFERENCES shoetypes(id) NOT NULL,
-    product_name VARCHAR(250) NOT NULL,
-    short_desc VARCHAR(250) NOT NULL,
-    full_desc TEXT NOT NULL,
-    price_pence INT NOT NULL,
-    stock INT NOT NULL,
-    in_carts INT NOT NULL DEFAULT 0,
-    size INT NOT NULL
-*/
