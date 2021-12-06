@@ -1,6 +1,6 @@
 import * as api from "../api";
-import { navigate } from "@reach/router";
 import { useEffect, useState } from "react";
+import { navigate } from "@reach/router";
 import {
   Container,
   Typography,
@@ -91,3 +91,15 @@ export default function StorePage() {
     </Container>
   );
 }
+
+/* product:
+category_id INT REFERENCES productcategories(id) NOT NULL,
+    shoetype_id INT REFERENCES shoetypes(id) NOT NULL,
+    product_name VARCHAR(250) NOT NULL,
+    short_desc VARCHAR(250) NOT NULL,
+    full_desc TEXT NOT NULL,
+    price_pence INT NOT NULL,
+    stock INT NOT NULL,
+    in_carts INT NOT NULL DEFAULT 0,
+    size INT NOT NULL
+*/
